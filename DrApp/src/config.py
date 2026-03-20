@@ -9,8 +9,8 @@ from PIL import Image
 
 BEST_HEAD_PARAMS = {
     'resnet50':    {'fc_dim': 128, 'dropout': 0.436595217760556, 'fc_layers': 3},
-    'densenet121': {'fc_dim': 128, 'dropout': 0.34287,           'fc_layers': 3},
-    'inceptionV3': {'fc_dim': 128, 'dropout': 0.34287,           'fc_layers': 3},
+    'densenet121': {'fc_dim': 128, 'dropout': 0.34287, 'fc_layers': 3},
+    'inceptionV3': {'fc_dim': 128, 'dropout': 0.34287, 'fc_layers': 3},
 }
 
 GRADE_INFO = {
@@ -39,10 +39,10 @@ MODEL_DISPLAY_NAMES = {
 
 class Config:
     def __init__(self):
-        self.model_dir          = Path('savemodels')
-        self.num_classes        = 5
-        self.img_size           = (512, 512)
-        self.device             = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        self.model_dir = Path('savemodels')
+        self.num_classes = 5
+        self.img_size = (512, 512)
+        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.default_head_params = {'fc_dim': 512, 'dropout': 0.5, 'fc_layers': 2}
 
     @staticmethod
@@ -56,9 +56,3 @@ class Config:
         ])
         image = Image.open(image_path).convert('RGB')
         return transform(image).unsqueeze(0)  # type: ignore # (1, 3, 512, 512)
-
-
-config = Config()
-config.preprocess_image("Training/aptos2019-blindness-detection/train_images/0a4e1a29ffff.png")
-
-print(config)

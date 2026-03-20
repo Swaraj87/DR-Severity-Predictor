@@ -42,7 +42,7 @@ class Inference:
     def __init__(self, model_dir: str='savemodels'):
         self.config = Config()
         self.device = self.config.device
-        self.model_dir = model_dir
+        self.model_dir = Path(model_dir)
         self.transfrom = get_inference_transfrom(self.config.img_size)
 
         print(f"Loading models on: {self.device}")
@@ -58,9 +58,9 @@ class Inference:
 
             manager = DRModelManager(self.config,
                                      model_name,
-                                     tuning_params= BEST_HEAD_PARAMS)
+                                     tuning_params= BEST_HEAD_PARAMS[model_name])
             manager.load_model(ckpt)
-            manager.model.eval() # type: ignore
+            manager.model.eval() # pyright: ignore[reportOptionalMemberAccess]
             self.manager[model_name] = manager
             print(f" {model_name} laoded")
 
@@ -70,7 +70,7 @@ class Inference:
             xgb_path = self.model_dir / f"{model_name}_xgb.pkl" # type: ignore
             if xgb_path.exists():
                 with open(xgb_path, 'rb') as f:
-                    self.xgb_models[model_name] = pickle.load(f) # type: ignore
+                    self.xgb[model_name] = pickle.load(f) # type: ignore
                 print(f"{model_name}_Xgb loaded")
 
         #Loading the SOMETE Ensemble model + its PCA:
@@ -79,7 +79,7 @@ class Inference:
         ens_path = self.model_dir/"ensemble_xgb.pkl" # type: ignore
         pca_path = self.model_dir/"ensemble_pca.pkl" # pyright: ignore[reportOperatorIssue]
 
-        if ens_path.exists() and pca_path.eixsts():
+        if ens_path.exists() and pca_path.exists():
             with open(ens_path, 'rb') as f:
                 self.ensemble_model = pickle.load(f)
             
@@ -130,7 +130,7 @@ class Inference:
     def _xgb_predict(self, model_name: str, features: np.ndarray) -> dict:
         "Runs a individual XGBoost model on CNN features."
         xgb_model = self.xgb[model_name]
-        probs = self.xgb.predict_proba(features)[0]
+        probs = xgb_model.predict_proba(features)[0]
         grade = int(probs.argmax())
         return{'grade': grade, 'confidence': float(probs[grade]), 'probs': probs.tolist()}
     

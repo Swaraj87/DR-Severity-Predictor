@@ -90,7 +90,7 @@ class GradCAMEngine:
             print("  Run: pip install grad-cam")
  
     def generate(self, pil_image: Image.Image,
-                 target_grade: int = None) -> dict:
+                 target_grade: int = None) -> dict: # type: ignore
 
         """
         Generates Grad-CAM overlays for all loaded CNN models.
@@ -127,7 +127,7 @@ class GradCAMEngine:
                     original_aux = model.aux_logits
                     model.aux_logits = False
 
-                with GradCAM(model=model, target_layers=target_layers) as cam:
+                with GradCAM(model=model, target_layers=target_layers) as cam: # type: ignore
 
                     targets = None
                     if target_grade is not None:
@@ -136,10 +136,10 @@ class GradCAMEngine:
                     
                     grayscale_cam = cam(
                         input_tensor=input_tensor,
-                        targets = targets
+                        targets = targets # type: ignore
                     )[0]
 
-                    overlays_array = show_cam_on_image(
+                    overlays_array = show_cam_on_image( # type: ignore
                     rgb_array,
                     grayscale_cam,
                     use_rgb=True,
@@ -150,7 +150,7 @@ class GradCAMEngine:
                     overlays[model_name] = Image.fromarray(overlays_array)
 
                     if model_name == "inceptionV3":
-                        model.aux_logits = original_aux
+                        model.aux_logits = original_aux # type: ignore
                     
             except Exception as e:
                 print(f"Grad-Cam failed for {model_name}: {e}")
