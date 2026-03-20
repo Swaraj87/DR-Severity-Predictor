@@ -92,7 +92,7 @@ class Inference:
         "Converts a PIL images to a (1,3,512,512) tensor."
         img = pil_images.convert("RGB")
         tensor = self.transfrom(img)
-        return tensor.unsqueeze(0).to(self.device)
+        return tensor.unsqueeze(0).to(self.device) # pyright: ignore[reportAttributeAccessIssue]
     
     def _cnn_predict(self, model_name:str, tensor: torch.Tensor) -> dict:
         """
